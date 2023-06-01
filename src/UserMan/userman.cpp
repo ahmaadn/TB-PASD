@@ -72,9 +72,10 @@ UserMan find_user(string username, string password){
         getline(ss, user_temp.username, ',');
         getline(ss, user_temp.password, ',');
         getline(ss, user_temp.role);
-        if (user_temp.username == username && user_temp.password == password)
+        if (user_temp.username == username && user_temp.password == password){
             DB_USERS.close();
             return user_temp;
+        }
     }
 
     // return none user
