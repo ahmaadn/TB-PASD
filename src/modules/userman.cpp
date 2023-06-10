@@ -50,7 +50,8 @@ int update_user(UserData& user) {
 
     while (true) {
         cout << "Username Baru  : ";
-        cin >> username;
+        cin.clear();
+        getline(cin, username);
 
         // mencari username yang sama
         if (!find_user(username)) {
@@ -64,7 +65,8 @@ int update_user(UserData& user) {
 
     // new password
     cout << "Password Baru  : ";
-    cin >> user.password;
+    cin.clear();
+    getline(cin, curr_user->password);
     
     // user saat ini tidak dapat ganti role jika user saat ini sebagai admin
     if (curr_user->username == user.username && user.role == "admin"){
@@ -75,7 +77,8 @@ int update_user(UserData& user) {
     do {
         cout << endl << "pilih role (admin/stack/queue)" << endl
              << "Role Baru      : "; 
-        cin >> role;
+        cin.clear();
+        getline(cin, role);
 
         // cek role
         if (role == "admin" || role == "stack" || role == "queue"){
