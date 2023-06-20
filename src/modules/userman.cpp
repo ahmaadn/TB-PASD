@@ -14,14 +14,6 @@ fstream DB_USERS;
 vector<UserData> DB;
 UserData *curr_user = nullptr;
 
-
-void init();
-bool find_user(string username);
-int update_user(UserData &user);
-void store_user();
-void display();
-void add_user();
-
 void init() {
     DB.clear();
 
@@ -39,7 +31,6 @@ void init() {
         getline(ss, user_tmp.password, ',');
         getline(ss, user_tmp.role);
 
-        // Menyimpan semua user ke vector
         DB.push_back(user_tmp);
     }
     DB_USERS.close();
@@ -82,8 +73,8 @@ int update_user(UserData& user) {
     }
 
     do {
-        cout << endl << "pilih role (admin/stack/queue)" << endl;
-        cout << "Role Baru      : "; 
+        cout << endl << "pilih role (admin/stack/queue)" << endl
+             << "Role Baru      : "; 
         cin >> role;
 
         // cek role
@@ -113,8 +104,7 @@ void display() {
     if (DB.empty()){
         cout << endl << endl << "Tidak ada user " << endl;
     } else {
-        cout << endl 
-             << endl 
+        cout << endl << endl 
              << "Daftar User (" << DB.size() << ")" << endl
              << garis("-", 50) << endl 
              << "NO\t" << "Username\t" << "Password\t" << "Role" << endl;
@@ -128,19 +118,14 @@ void display() {
     }
 }
 
-LoginReturn login(string username, string password) {
-    LoginReturn data;
-    data.loggedIn = false;
-    data.role = "";
+bool login(string username, string password) {
     for (UserData& user : DB) {
         if (user.username == username && user.password == password) {
             curr_user = &user;
-            data.loggedIn = true;
-            data.role = curr_user->role;
-            return data;
+            return true;
         }
     }
-    return data;
+    return false;
 }
 
 void add_user(){

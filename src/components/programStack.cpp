@@ -1,61 +1,69 @@
 #include <iostream>
 #include <vector>
 #include <conio.h>
+#include <string>
+
 using namespace std;
 
 // import file tambahan
 #include "../modules/stack.cpp"
 #include "../utils/utilityFunctions.h"
+#include "../utils/dataType.h"
 
 // program Penerima Pegawai sebagai program menerapkan stack
-vector<string> programStack(vector<string> dataLamaran, vector<string> sisaLamaran) {
+LamaranData programStack(vector<string> lamaranBaru, vector<string> lamaranSisa) {
     // inisialisasi objek stack
     Stack programStack;
 
     // pembuatan variabel
-    vector<string> _dataLamaran = dataLamaran; // Penampung data pelamar dari program queue
-    vector<string> _sisaLamaran = sisaLamaran; // Penampung data pelamar dari program queue
+    LamaranData dataLamaran;
+    dataLamaran.dataBaru = lamaranBaru; // Penampung data pelamar dari program queue
+    dataLamaran.dataSisa = lamaranSisa; // Penampung sisa pelamar sebelumnya
     int pilihan; // penampung menu pilihan user
-    string pelamar; // penampung nama pelamar jika ingin menambahkan
+    string pelamar, confirmClear; // penampung nama pelamar jika ingin menambahkan
 
     /*
     cek data pelamar dari program queue
     jika tidak kosong maka semua data dimasukan ke objek stack
      */
-    if (!_dataLamaran.empty()) {
-        for (int i = 0; i < _dataLamaran.size(); i++) {
-            programStack.push(_dataLamaran[i]);
-            cout << _dataLamaran[i];
-        }
-    }
 
-    if (!_sisaLamaran.empty()) {
-        for (int i = 0; i < _sisaLamaran.size(); i++) {
-            cout << _sisaLamaran[i];
-            programStack.push(_sisaLamaran[i]);
+    if (!dataLamaran.dataSisa.empty()) {
+        for (int i = 0; i < dataLamaran.dataSisa.size(); i++) {
+            programStack.push(dataLamaran.dataSisa[i]);
         }
-        // _sisaLamaran.clear();
     }
     
+    if (!dataLamaran.dataBaru.empty()) {
+        for (int i = 0; i < dataLamaran.dataBaru.size(); i++) {
+            programStack.push(dataLamaran.dataBaru[i]);
+            dataLamaran.dataSisa.push_back(dataLamaran.dataBaru[i]);
+        }
+        dataLamaran.dataBaru.clear();
+    }
     // menu program utama
     do {
         clrscr(); // Persihkan layar setiap kali program stack dimulai
-        cout << "\t\tProgram Penerimaan Pegawai" << endl
-        << "\nPosisi anda sebagai penerima lamaran.\nSilahkan pilih menu dibawah ini" << endl << endl
-        << "1. Terima Surat Lamaran" << endl
-        << "2. Baca Surat Lamaran" << endl
-        << "3. Buang Semua Surat Lamaran" << endl
-        << "4. Logout" << endl
-        << endl << "Pilih Menu >> "; cin >> pilihan;
-        cin.ignore();
+        cout << garis("=", 50) << endl
+        <<"\tProgram Penerimaan Pegawai" << endl
+        << garis("=", 50) << endl;
 
-        if (pilihan < 4) {
-            // menampilkan seluruh pelamar
-            cout << endl << "\tTumpukan Surat Lamaran" << endl;
-            programStack.show_stack();
+        cout << "\nPosisi anda sebagai penerima lamaran.\nSilahkan pilih menu dibawah ini" << endl << endl;
 
-        }
-        
+        cout << "Menu Utama :" << endl
+        << "  1. Terima Surat Lamaran" << endl
+        << "  2. Baca Surat Lamaran" << endl
+        << "  3. Buang Semua Surat Lamaran" << endl
+        << "  4. Logout" << endl;
+
+        // menampilkan seluruh pelamar
+        cout << endl << garis("-", 50) << endl << endl
+        << "Surat lamaran yang ada : " << endl;
+        programStack.show_stack();
+
+        cout << endl << endl<< garis("-", 50) << endl;
+
+        pilihan = getInput("Pilihan menu >> ");
+            
         switch (pilihan) {
         // kondisi user memilih untuk menerima surat lamaran baru
         case 1:
@@ -64,7 +72,7 @@ vector<string> programStack(vector<string> dataLamaran, vector<string> sisaLamar
 
             // menambahkan pelamar baru ke objek stack
             programStack.push(pelamar);
-            _sisaLamaran.push_back(pelamar);
+            dataLamaran.dataSisa.push_back(pelamar);
             
             // pesan validasi bahwa pelamar baru telah ditambahkan
             cout << "Surat lamaran dari " << pelamar << " sudah disimpan ke tumpukan" << endl;
@@ -73,10 +81,6 @@ vector<string> programStack(vector<string> dataLamaran, vector<string> sisaLamar
         case 2:
             // menampung data pelamar yang sudah dibaca
             pelamar = programStack.pop();
-
-            if (_sisaLamaran.size() > 0) {
-                _sisaLamaran.pop_back();
-            }
             
             /*
             pengecekan apakah data pelamar kosong atau tidak
@@ -85,6 +89,7 @@ vector<string> programStack(vector<string> dataLamaran, vector<string> sisaLamar
             */
             if (pelamar != "") {
                 cout << endl << "Surat lamaran dari " << pelamar << " sudah dibaca" << endl;
+                dataLamaran.dataSisa.pop_back();
             } else {
                 cout << endl << "Tidak ada surat lamaran untuk dibaca" << endl;
             }
@@ -92,10 +97,14 @@ vector<string> programStack(vector<string> dataLamaran, vector<string> sisaLamar
         
         case 3:
             // konfirmasi bahwa data dalam stack akan dihapus
-            cout << endl << "Data dalam tumpukan akan dihapus" << endl;;
+            cout << endl << "Data dalam tumpukan akan dihapus, apakah anda yakin? "; cin >> confirmClear;
+            if (confirmClear == "Y" || confirmClear == "y") {
             programStack.clear_stack();
-            _sisaLamaran.clear();
-            _dataLamaran.clear();
+            dataLamaran.dataSisa.clear();
+            cout << endl << "Tumpukan lamaran berhasil dihapus" << endl;
+            } else {
+                cout << endl << "Menghapus tumpukan lamaran dibatalkan" << endl;
+            }
             break;
 
         case 4:
@@ -104,11 +113,12 @@ vector<string> programStack(vector<string> dataLamaran, vector<string> sisaLamar
             break;
 
         default:
+            cout << endl << "Input tidak valid. Silakan coba lagi." << endl;
             break;
         }
 
     cout << endl << "klik tombol apapun untuk melanjutkan...";
     getch();
     } while (pilihan != 4);
-    return _sisaLamaran;
+    return dataLamaran;
 }
